@@ -56,8 +56,6 @@ public class QueryUtils {
 
                 for (int i = 0; i < length; i++) {
 
-                    String category = "";
-                    String urlJsonLink = "";
                     String author = "";
 
                     // Get a single article at position i within the list of articles
@@ -90,13 +88,9 @@ public class QueryUtils {
             }
         } catch (JSONException e) {
             Log.e("QueryUtils", "Problem parsing the earthquake JSON results", e);
-
         }
-
         return news;
     }
-
-
 
     /**
      * create URL
@@ -110,9 +104,6 @@ public class QueryUtils {
         }
         return url;
     }
-
-
-
 
     /**
      * make Http request
@@ -153,9 +144,6 @@ public class QueryUtils {
         return jsonResponse;
     }
 
-
-
-
     /**
      * read from stream
      */
@@ -172,8 +160,6 @@ public class QueryUtils {
         }
         return output.toString();
     }
-
-
 
     /**
      * Query the USGS dataset and return a list of objects.
@@ -202,10 +188,5 @@ public class QueryUtils {
         // Return the list of {@link Event}s
         return news;
     }
-
-
-
-
-
 
 }

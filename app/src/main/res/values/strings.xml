@@ -2,5 +2,5 @@
     <string name="app_name">NewsAppStage1V5</string>
 
     <string name="no_internet_connection">No internet connection</string>
-    <string name="no_news">no news</string>
+    <string name="no_news">no news found, try to reload the application.</string>
 </resources>

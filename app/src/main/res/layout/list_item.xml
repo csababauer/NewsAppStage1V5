@@ -51,7 +51,6 @@
             android:textStyle="bold"
             tools:text="author" />
 
-
     </LinearLayout>
 
     <LinearLayout
@@ -69,8 +68,6 @@
             android:layout_gravity="end"
             android:textSize="12sp"
             tools:text="Mar 6, 2010" />
-
-
 
     </LinearLayout>
 </LinearLayout>

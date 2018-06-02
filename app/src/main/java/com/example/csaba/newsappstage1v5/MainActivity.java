@@ -93,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     }
 
-
     @Override
     public Loader<List<Event>> onCreateLoader(int i, Bundle bundle) {
         // Create a new loader for the given URL
@@ -103,21 +102,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public void onLoadFinished(Loader<List<Event>> loader, List<Event> news) {
 
-        // Hide loading indicator because the data has been loaded
-        View loadingIndicator = findViewById(R.id.loading_indicator);
-        loadingIndicator.setVisibility(View.GONE);
+        /** Get a reference to the ConnectivityManager to check state of network connectivity*/
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        // Set empty state text to display "No earthquakes found."
-        mEmptyStateTextView.setText(R.string.no_news);
+        // Get details on the currently active default data network
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
-        // Clear the adapter of previous earthquake data
-        adapter.clear();
+        // If there is a network connection
+        if (networkInfo != null && networkInfo.isConnected()) {
+            // Hide loading indicator because the data has been loaded
+            View loadingIndicator = findViewById(R.id.loading_indicator);
+            loadingIndicator.setVisibility(View.GONE);
 
-        // If there is a valid list of {@link Earthquake}s, then add them to the adapter's
-        // data set. This will trigger the ListView to update.
-        if (news != null && !news.isEmpty()) {
-            adapter.addAll(news);
-        }
+            // Set empty state text to display "no news"
+            mEmptyStateTextView.setText(R.string.no_news);
+
+            // Clear the adapter of previous data
+            adapter.clear();
+
+            // If there is a valid list of news, then add them to the adapter's
+            // data set. This will trigger the ListView to update.
+            if (news != null && !news.isEmpty()) {
+                adapter.addAll(news);
+            }
+        } else
+            // Update empty state with no connection error message
+            mEmptyStateTextView.setText(R.string.no_internet_connection);
     }
 
     @Override
