@@ -4,11 +4,15 @@ import android.app.LoaderManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -19,7 +23,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Event>> {
 
-    private static final String requestUrl = "https://content.guardianapis.com/search?q=bitcoin&from-date=2014-01-01&show-tags=contributor&order-by=newest&api-key=1da394a8-c369-4807-bc2a-a49b797f8e62";
+    //The required url after Uri builder: "https://content.guardianapis.com/search?q=bitcoin&from-date=2014-01-01&show-tags=contributor&order-by=newest&api-key=1da394a8-c369-4807-bc2a-a49b797f8e62";
+    private static final String requestUrl = "https://content.guardianapis.com/search";
+
 
     private EventAdapter adapter;
 
@@ -96,7 +102,33 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     public Loader<List<Event>> onCreateLoader(int i, Bundle bundle) {
         // Create a new loader for the given URL
-        return new EventLoader(this, requestUrl);
+
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // getString retrieves a String value from the preferences. The second parameter is the default value for this preference.
+        String newUrlRequest = sharedPrefs.getString(
+                getString(R.string.new_search_word_key),
+                getString(R.string.settings_default));
+        //get size key
+        String newSize = sharedPrefs.getString(getString(R.string.settings_size_key),getString(R.string.settings_size_by_default));
+
+
+        // parse breaks apart the URI string that's passed into its parameter
+        Uri baseUri = Uri.parse(requestUrl);
+
+        // buildUpon prepares the baseUri that we just parsed so we can add query parameters to it
+        Uri.Builder uriBuilder = baseUri.buildUpon();
+
+        // Append query parameter and its value.
+        uriBuilder.appendQueryParameter("q", newUrlRequest);
+        uriBuilder.appendQueryParameter("from-date", "2014-01-01");
+        uriBuilder.appendQueryParameter("show-tags", "contributor");
+        uriBuilder.appendQueryParameter("order-by", "newest");
+        uriBuilder.appendQueryParameter("page-size", newSize);
+        uriBuilder.appendQueryParameter("api-key", "1da394a8-c369-4807-bc2a-a49b797f8e62");
+
+        // Return the completed uri
+        return new EventLoader(this, uriBuilder.toString());
     }
 
     @Override
@@ -137,5 +169,23 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         adapter.clear();
     }
 
+    @Override
+    // This method initialize the contents of the Activity's options menu
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    // This method is called whenever an item in the options menu is selected.
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
 }
